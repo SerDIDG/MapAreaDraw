@@ -1,0 +1,49 @@
+body {
+	margin: 0;
+	padding: 20px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+img {
+	border: none;
+	outline: none;
+	display: block;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.canvas {
+	border: 2px solid #333;
+	padding: 2px;
+	margin-bottom: 16px;
+	display: inline-block;
+	//display: inline;
+	//zoom:1;
+}
+.canvas.draw {
+	border-color: #3C0;
+}
+.canvas .inner {
+	position: relative;
+}
+.canvas .point {
+	width: 1px;
+	height: 1px;
+	background-color: #fff;
+	border: 1px solid #000;
+	overflow: hidden;
+	position: absolute;
+}
+
+.bar {
+	margin-bottom: 16px;
+}
+
+.info {
+	background-color: #FCFCFC;
+	border: 1px dotted #CCC;
+	font-size: 12px;
+	font-style: italic;
+	padding: 8px;
+	word-wrap: break-word;
+}
