@@ -6,9 +6,20 @@
 
 var Painter = new function(){
 	var that = this,
+		isCanvas = false,
 		nodes,
 		points = [],
 		areas = [];
+		
+	var checkCanvas = function(){
+		if(nodes['canvas'].getContext){
+			isCanvas = true;
+			nodes['canvas'].width = nodes['draw'].offsetWidth;
+			nodes['canvas'].height = nodes['draw'].offsetHeight;
+		}else{
+			_.remove(nodes['canvas']);
+		}
+	};
 		
 	var clearBtn = function(){
 		nodes['clear'] = nodes['buttons'].appendChild(_.node('input', {'type':'button', 'value':'Clear'}));
@@ -31,8 +42,10 @@ var Painter = new function(){
 	};
 	
 	var clear = function(){
-		for(var i = 0, l = points.length; i < l; i++){
-			_.remove(points[i]['node']);
+		if(!isCanvas){
+			for(var i = 0, l = points.length; i < l; i++){
+				_.remove(points[i]['node']);
+			}
 		}
 		points = [];
 	};
@@ -46,8 +59,9 @@ var Painter = new function(){
 	var add = function(){
 		clear();
 		_.remove(nodes['add']);
-		_.addClass(nodes['container'], 'draw');
-		_.addEvent(nodes['canvas'], 'mousedown', addPoint);
+		_.addClass(nodes['preview'], 'draw');
+		_.addEvent(nodes['draw'], 'mousedown', addPoint);
+		// Render buttons
 		clearBtn();
 		saveBtn();
 	};
@@ -55,8 +69,8 @@ var Painter = new function(){
 	var save = function(){
 		_.remove(nodes['clear']);
 		_.remove(nodes['save']);
-		_.removeClass(nodes['container'], 'draw');
-		_.removeEvent(nodes['canvas'], 'mousedown', addPoint);
+		_.removeClass(nodes['preview'], 'draw');
+		_.removeEvent(nodes['draw'], 'mousedown', addPoint);
 		addBtn();
 		areas.push(_.clone(points));
 		renderInfo();
@@ -64,18 +78,49 @@ var Painter = new function(){
 	
 	var addPoint = function(e){
 		var e = _.getEvent(e),
-			offset = _.getOffset(nodes['canvas']),
+			offset = _.getOffset(nodes['draw']),
 			x = e.clientX + _.getDocScrollLeft() - offset[0],
-			y = e.clientY + _.getDocScrollTop() - offset[1],
-			node = nodes['canvas'].appendChild(_.node('div', {'class':'point'}));
-			
-		node.style.top = y-1+'px';
-		node.style.left = x-1+'px';
-			
-		points.push({'x' : x, 'y' : y, 'node' : node});
+			y = e.clientY + _.getDocScrollTop() - offset[1];
+		
+		if(isCanvas){
+			addCanvasPoint(x,y);
+		}else{
+			addHtmlPoint(x,y);
+		}
 		
 		e.preventDefault && e.preventDefault();
 		return false;
+	};
+	
+	var addHtmlPoint = function(x, y){
+		var node = nodes['draw'].appendChild(_.node('div', {'class':'point'}));
+		node.style.top = y-1+'px';
+		node.style.left = x-1+'px';
+		// Push point to area array
+		points.push({'x' : x, 'y' : y, 'node' : node});
+	};
+	
+	var addCanvasPoint = function(x, y){
+		var prev = points[points.length-1],
+			line;
+		
+		if(points.length > 0){
+			line = nodes['canvas'].getContext('2d');
+			// Style
+			line.strokeStyle = 'rgb(0,172,239)';
+			line.fillStyle = 'rgba(0,172,239,0.8)';
+			line.lineWidth = 2;
+			// Draw
+			line.beginPath();
+			if(prev){
+				line.moveTo(prev['x'], prev['y']);
+			}
+			line.lineTo(x, y);
+			line.stroke();
+			line.closePath();
+		}
+		// Push point to area array
+		points.push({'x' : x, 'y' : y});
 	};
 	
 	var renderInfo = function(){
@@ -106,11 +151,14 @@ var Painter = new function(){
 	
 	that.init = function(){
 		nodes = {
-			'container' : _.getEl('container'),
+			'preview' : _.getEl('preview'),
+			'draw' : _.getEl('draw'),
 			'canvas' : _.getEl('canvas'),
 			'buttons' : _.getEl('bar'),
 			'info' : _.getEl('info')
 		}
+		// Init Canvas
+		checkCanvas();
 		// Render buttons
 		clearAllBtn();
 		addBtn();
