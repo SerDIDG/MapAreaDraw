@@ -8,6 +8,7 @@ var Painter = new function(){
 	var that = this,
 		isCanvas = false,
 		nodes,
+		context,
 		points = [],
 		areas = [];
 		
@@ -16,16 +17,12 @@ var Painter = new function(){
 			isCanvas = true;
 			nodes['canvas'].width = nodes['draw'].offsetWidth;
 			nodes['canvas'].height = nodes['draw'].offsetHeight;
+			context = nodes['canvas'].getContext('2d');
 		}else{
 			_.remove(nodes['canvas']);
 		}
 	};
-		
-	var clearBtn = function(){
-		nodes['clear'] = nodes['buttons'].appendChild(_.node('input', {'type':'button', 'value':'Clear'}));
-		nodes['clear'].onclick = clear;
-	};
-		
+	
 	var clearAllBtn = function(){
 		nodes['clear_all'] = nodes['buttons'].appendChild(_.node('input', {'type':'button', 'value':'Clear All'}));
 		nodes['clear_all'].onclick = clearAll;
@@ -41,39 +38,48 @@ var Painter = new function(){
 		nodes['save'].onclick = save;
 	};
 	
-	var clear = function(){
-		if(!isCanvas){
-			for(var i = 0, l = points.length; i < l; i++){
-				_.remove(points[i]['node']);
-			}
-		}
-		points = [];
-	};
-	
 	var clearAll = function(){
-		_.clearNode(nodes['info']);
 		clear();
+		_.clearNode(nodes['info']);
+		points = [];
 		areas = [];
+		// Clear preview from points or canvas
+		if(isCanvas){
+			clearCanvas();
+		}else{
+			clearPoints();
+		}
 	};
 		
 	var add = function(){
-		clear();
 		_.remove(nodes['add']);
 		_.addClass(nodes['preview'], 'draw');
 		_.addEvent(nodes['draw'], 'mousedown', addPoint);
 		// Render buttons
-		clearBtn();
 		saveBtn();
 	};
 	
 	var save = function(){
-		_.remove(nodes['clear']);
+		clear();
+		areas.push(_.clone(points));
+		points = [];
+		renderInfo();
+	};
+	
+	var clear = function(){
+		_.remove(nodes['add']);
 		_.remove(nodes['save']);
 		_.removeClass(nodes['preview'], 'draw');
 		_.removeEvent(nodes['draw'], 'mousedown', addPoint);
 		addBtn();
-		areas.push(_.clone(points));
-		renderInfo();
+	}
+	
+	var clearCanvas = function(){
+		context.clearRect(0, 0, nodes['canvas'].width, nodes['canvas'].height);
+	};
+	
+	var clearPoints = function(){
+		_.clearNode(nodes['points']);
 	};
 	
 	var addPoint = function(e){
@@ -81,46 +87,56 @@ var Painter = new function(){
 			offset = _.getOffset(nodes['draw']),
 			x = e.clientX + _.getDocScrollLeft() - offset[0],
 			y = e.clientY + _.getDocScrollTop() - offset[1];
-		
+		// Push point to area array
+		points.push({'x' : x, 'y' : y});
+		// Draw point
 		if(isCanvas){
-			addCanvasPoint(x,y);
+			drawCanvasAll();
 		}else{
-			addHtmlPoint(x,y);
+			drawHtmlPoint(x,y);
 		}
-		
+		// Prevent drag event
 		e.preventDefault && e.preventDefault();
 		return false;
 	};
 	
-	var addHtmlPoint = function(x, y){
-		var node = nodes['draw'].appendChild(_.node('div', {'class':'point'}));
+	var drawHtmlPoint = function(x, y){
+		var node = nodes['points'].appendChild(_.node('div', {'class':'point'}));
 		node.style.top = y-1+'px';
 		node.style.left = x-1+'px';
-		// Push point to area array
-		points.push({'x' : x, 'y' : y, 'node' : node});
 	};
 	
-	var addCanvasPoint = function(x, y){
-		var prev = points[points.length-1],
-			line;
-		
-		if(points.length > 0){
-			line = nodes['canvas'].getContext('2d');
-			// Style
-			line.strokeStyle = 'rgb(0,172,239)';
-			line.fillStyle = 'rgba(0,172,239,0.8)';
-			line.lineWidth = 2;
-			// Draw
-			line.beginPath();
-			if(prev){
-				line.moveTo(prev['x'], prev['y']);
+	var drawCanvasPoints = function(o){
+		// Draw lines
+		context.fillStyle = 'rgba(0,172,239,0.2)';
+		context.lineWidth = 1;
+		context.strokeStyle = 'rgba(0,172,239,0.8)';
+		context.beginPath();
+		for(var i = 0, l = o.length; i < l; i++){
+			if(i == 0){
+				context.moveTo(o[i]['x'], o[i]['y']);
+			}else{
+				context.lineTo(o[i]['x'], o[i]['y']);
 			}
-			line.lineTo(x, y);
-			line.stroke();
-			line.closePath();
 		}
-		// Push point to area array
-		points.push({'x' : x, 'y' : y});
+		context.closePath();
+		context.fill();
+		context.stroke();
+		// Draw points
+		context.fillStyle = 'rgba(0,139,191,0.8)';
+		for(var i = 0, l = o.length; i < l; i++){
+			context.fillRect(o[i]['x']- 2, o[i]['y']- 2, 4, 4);
+		}
+	};
+	
+	var drawCanvasAll = function(){
+		clearCanvas();
+		// Draw saved areas
+		for(var i = 0, l = areas.length; i < l; i++){
+			drawCanvasPoints(areas[i]);
+		}
+		// Draw current area
+		drawCanvasPoints(points);
 	};
 	
 	var renderInfo = function(){
@@ -154,6 +170,7 @@ var Painter = new function(){
 			'preview' : _.getEl('preview'),
 			'draw' : _.getEl('draw'),
 			'canvas' : _.getEl('canvas'),
+			'points' : _.getEl('points'),
 			'buttons' : _.getEl('bar'),
 			'info' : _.getEl('info')
 		}
