@@ -76,7 +76,7 @@ _.count = function(o){
 
 _.isCenterButton = function(e){
 	var e = _.getEvent(e);
-	return e.button == ((_.is('IE') && _.isVersion() < 9)? 4 : 1);
+	return e.button == ((_.IE8 || _.IE7)? 4 : 1);
 };
 _.addEvent = function(elem, type, handler){
 	try{ elem.addEventListener(type, handler, false); }catch(e){ elem.attachEvent("on"+type, handler); }
@@ -187,8 +187,7 @@ _.dataset = function(el, attr){
 	}
 };
 _.getPageSize = function(){
-	var nodes = Template.getNodes(),
-		d = document,
+	var d = document,
 		de = d.documentElement,
 		o = {
 			'height' : Math.max(
