@@ -65,14 +65,14 @@ MapAreaDraw.prototype.renderClearAllButton = function () {
     this.nodes.clearAllButton.value = 'Clear All';
     this.nodes.clearAllButton.addEventListener('click', this.clearAllHandler.bind(this));
     this.nodes.buttons.appendChild(this.nodes.clearAllButton);
-}
+};
 
 MapAreaDraw.prototype.clearAllHandler = function () {
     this.points = [];
     this.areas = [];
     this.clear();
     this.clearCanvas();
-}
+};
 
 MapAreaDraw.prototype.clear = function () {
     this.nodes.inner.removeEventListener('mousedown', this.addPointBoundHandler);
@@ -80,7 +80,7 @@ MapAreaDraw.prototype.clear = function () {
     this.removeAddButtons();
     this.removeSaveButton();
     this.renderAddButtons();
-}
+};
 
 MapAreaDraw.prototype.renderAddButtons = function () {
     this.nodes.addPolyButton = document.createElement('input');
@@ -94,12 +94,12 @@ MapAreaDraw.prototype.renderAddButtons = function () {
     this.nodes.addRectButton.value = 'Add Rect Area';
     this.nodes.addRectButton.addEventListener('click', this.addRectHandler.bind(this));
     this.nodes.buttons.appendChild(this.nodes.addRectButton);
-}
+};
 
 MapAreaDraw.prototype.removeAddButtons = function () {
     this.nodes.addPolyButton.remove();
     this.nodes.addRectButton.remove();
-}
+};
 
 MapAreaDraw.prototype.addPolyHandler = function () {
     this._areaType = 'poly';
@@ -107,7 +107,7 @@ MapAreaDraw.prototype.addPolyHandler = function () {
     this.nodes.inner.addEventListener('mousedown', this.addPointBoundHandler);
     this.removeAddButtons();
     this.renderSaveButton();
-}
+};
 
 MapAreaDraw.prototype.addRectHandler = function () {
     this._areaType = 'rect';
@@ -115,7 +115,7 @@ MapAreaDraw.prototype.addRectHandler = function () {
     this.nodes.inner.addEventListener('mousedown', this.addPointBoundHandler);
     this.removeAddButtons();
     this.renderSaveButton();
-}
+};
 
 MapAreaDraw.prototype.renderSaveButton = function () {
     this.nodes.saveButton = document.createElement('input');
@@ -123,11 +123,11 @@ MapAreaDraw.prototype.renderSaveButton = function () {
     this.nodes.saveButton.value = 'Save Area';
     this.nodes.saveButton.addEventListener('click', this.saveHandler.bind(this));
     this.nodes.buttons.appendChild(this.nodes.saveButton);
-}
+};
 
 MapAreaDraw.prototype.removeSaveButton = function () {
     this.nodes.saveButton.remove();
-}
+};
 
 MapAreaDraw.prototype.saveHandler = function () {
     let _points;
@@ -148,7 +148,7 @@ MapAreaDraw.prototype.saveHandler = function () {
     this.points = [];
     this.clear();
     this.renderInfo();
-}
+};
 
 MapAreaDraw.prototype.addPointHandler = function (event) {
     event.preventDefault();
@@ -166,7 +166,7 @@ MapAreaDraw.prototype.addPointHandler = function (event) {
     this.points.push({x: x, y: y});
 
     this.draw();
-}
+};
 
 MapAreaDraw.prototype.draw = function () {
     const that = this;
@@ -175,7 +175,7 @@ MapAreaDraw.prototype.draw = function () {
         that.drawPoints(area.points, area.type)
     });
     this.drawPoints(this.points, this._areaType);
-}
+};
 
 MapAreaDraw.prototype.drawPoints = function (points, type) {
     const that = this;
@@ -220,7 +220,7 @@ MapAreaDraw.prototype.drawPoints = function (points, type) {
             that.styles.point.width
         );
     });
-}
+};
 
 MapAreaDraw.prototype.renderInfo = function () {
     const that = this;
@@ -250,23 +250,23 @@ MapAreaDraw.prototype.renderInfo = function () {
     node = document.createElement('div');
     node.innerText = '</map>';
     this.nodes.info.appendChild(node);
-}
+};
 
 MapAreaDraw.prototype.clearInfo = function () {
     while (this.nodes.info.firstChild) {
         this.nodes.info.firstChild.remove();
     }
-}
+};
 
 MapAreaDraw.prototype.getCanvas = function () {
     this.nodes.canvas.width = this.nodes.inner.offsetWidth;
     this.nodes.canvas.height = this.nodes.inner.offsetHeight;
     this.context = this.nodes.canvas.getContext('2d');
-}
+};
 
 MapAreaDraw.prototype.clearCanvas = function () {
     this.context.clearRect(0, 0, this.nodes.canvas.width, this.nodes.canvas.height);
-}
+};
 
 MapAreaDraw.prototype.normalizeRectPoints = function(points) {
     return {
@@ -275,7 +275,7 @@ MapAreaDraw.prototype.normalizeRectPoints = function(points) {
         x2: Math.max(points[0].x, points[1].x),
         y2: Math.max(points[0].y, points[1].y)
     }
-}
+};
 
 window.addEventListener('load', function() {
     const Draw = new MapAreaDraw();
