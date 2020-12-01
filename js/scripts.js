@@ -75,6 +75,7 @@ MapAreaDraw.prototype.clearAllHandler = function () {
 };
 
 MapAreaDraw.prototype.clear = function () {
+    this.nodes.container.classList.remove('draw');
     this.nodes.inner.removeEventListener('mousedown', this.addPointBoundHandler);
     this.clearInfo();
     this.removeAddButtons();
@@ -111,7 +112,7 @@ MapAreaDraw.prototype.addPolyHandler = function () {
 
 MapAreaDraw.prototype.addRectHandler = function () {
     this._areaType = 'rect';
-    this.nodes.container.classList.remove('draw');
+    this.nodes.container.classList.add('draw');
     this.nodes.inner.addEventListener('mousedown', this.addPointBoundHandler);
     this.removeAddButtons();
     this.renderSaveButton();
