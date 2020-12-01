@@ -1,0 +1,9 @@
+.DS_Store
+.idea
+.git
+ehthumbs.db
+Thumbs.db
+env.json
+libs
+temp
+node_modules
