@@ -2,7 +2,7 @@
 /* ******* @ Serhio Magpie ******* */
 
 /* serdidg@gmail.com      */
-/* http://screensider.com */
+/* https://screensider.com */
 
 function getOffset(o) {
     let x = 0,
@@ -192,7 +192,7 @@ MapAreaDraw.prototype.drawPoints = function (points, type) {
             {x: _normalize.x1, y: _normalize.y2}
         ];
     } else {
-        _points = points
+        _points = points;
     }
 
     // Draw lines
@@ -277,15 +277,3 @@ MapAreaDraw.prototype.normalizeRectPoints = function(points) {
         y2: Math.max(points[0].y, points[1].y)
     }
 };
-
-window.addEventListener('load', function() {
-    const Draw = new MapAreaDraw();
-    Draw.render({
-        'container': document.getElementById('container'),
-        'inner': document.getElementById('inner'),
-        'canvas': document.getElementById('canvas'),
-        'points': document.getElementById('points'),
-        'buttons': document.getElementById('bar'),
-        'info': document.getElementById('info'),
-    });
-});

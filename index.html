@@ -5,6 +5,19 @@
 	<title>Map Area Draw</title>
 	<link type="text/css" rel="stylesheet" href="css/styles.css">
 	<script type="text/javascript" src="js/scripts.js"></script>
+	<script type="text/javascript">
+		window.addEventListener('load', function() {
+			const Draw = new MapAreaDraw();
+			Draw.render({
+				'container': document.getElementById('container'),
+				'inner': document.getElementById('inner'),
+				'canvas': document.getElementById('canvas'),
+				'points': document.getElementById('points'),
+				'buttons': document.getElementById('bar'),
+				'info': document.getElementById('info'),
+			});
+		});
+	</script>
 </head>
 
 <body>
@@ -12,7 +25,7 @@
 <div class="container" id="container">
 	<div class="inner" id="inner">
 		<canvas id="canvas"></canvas>
-		<img src="img/sample.png" alt="Sample">
+		<img src="img/sample.png" alt="Sample Image">
 		<div class="points" id="points"></div>
 	</div>
 </div>
